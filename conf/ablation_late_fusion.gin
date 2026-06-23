@@ -1,0 +1,2 @@
+include 'conf/symbiont.gin'
+ImmunoFounder.block_cross = True

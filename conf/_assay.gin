@@ -1,0 +1,41 @@
+import mycorrhiza.network
+import mycorrhiza.substrate.corpus
+import mycorrhiza.cultivation.grower
+import mycorrhiza.cultivation.schedule
+import mycorrhiza.tropism.composite
+
+ImmunoFounder.dim = 32
+ImmunoFounder.depth = 2
+ImmunoFounder.heads = 2
+ImmunoFounder.hidden = 16
+ImmunoFounder.experts = 2
+ImmunoFounder.top_k = 1
+ImmunoFounder.use_cross = True
+ImmunoFounder.use_spatial = True
+ImmunoFounder.use_rope = True
+ImmunoFounder.block_cross = False
+
+synthetic_corpus.n_sc = 16
+synthetic_corpus.n_sp = 16
+synthetic_corpus.n_genes = 24
+synthetic_corpus.n_types = 3
+synthetic_corpus.mask_ratio = 0.30
+synthetic_corpus.neighbours = 4
+synthetic_corpus.r_min = 0.3
+synthetic_corpus.seed = 0
+
+composite_loss.lam_align = 0.5
+composite_loss.lam_spatial = 0.3
+composite_loss.use_mask = True
+composite_loss.tau = 0.3
+
+Grower.lr = 1e-3
+Grower.weight_decay = 0.01
+Grower.betas = (0.9, 0.999)
+Grower.warmup_steps = 1
+Grower.max_steps = 4
+Grower.grad_accum = 1
+Grower.amp = False
+Grower.seed = 0
+Grower.device = "cpu"
+Grower.ckpt_dir = "runs"

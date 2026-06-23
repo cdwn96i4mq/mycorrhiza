@@ -1,0 +1,2 @@
+include 'conf/symbiont.gin'
+ImmunoFounder.depth = 24

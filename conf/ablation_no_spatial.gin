@@ -1,0 +1,3 @@
+include 'conf/symbiont.gin'
+ImmunoFounder.use_spatial = False
+ImmunoFounder.use_rope = False

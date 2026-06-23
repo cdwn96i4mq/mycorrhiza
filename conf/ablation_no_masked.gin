@@ -1,0 +1,3 @@
+include 'conf/symbiont.gin'
+composite_loss.use_mask = False
+synthetic_corpus.mask_ratio = 0.0

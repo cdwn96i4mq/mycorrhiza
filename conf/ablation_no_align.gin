@@ -1,0 +1,2 @@
+include 'conf/symbiont.gin'
+composite_loss.lam_align = 0.0

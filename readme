@@ -1,0 +1,122 @@
+================================================================================
+  MYCORRHIZA  --  foray record
+  joint scRNA-seq + spatial transcriptomics, one cross-modal embedding
+================================================================================
+
+collector .... ImmunoFounder working group
+habitat ...... solid-tumour microenvironments, eleven cancer histologies
+substrate .... dissociated single-cell RNA-seq coupled to tumour spatial spots
+method ....... token-level cross-modal masked attention, one shared embedding
+yield ........ thirty-two candidate immune-evasion programmes, nine spatially resolved
+
+
+-- what is in this fruiting body ---------------------------------------------
+
+The mycorrhiza package treats a dissociated cell and a spatial spot as two token
+streams of the same organism. A single twelve-layer encoder mixes them with a
+learnable modality-bias mask and a spatial adjacency bias, rotates spot tokens by
+their tissue coordinates, and is trained to rebuild gene values that have been
+hidden in either stream from the context left in both. After pretraining, the
+unsupervised forage walk clusters the embedding, scores each cluster for immune
+exclusion, and reads out a differential signature per flagged zone.
+
+  mycorrhiza/substrate   corpus assembly, affine + modality tokeniser, rotary
+                         coordinate encoding, k-nearest spatial graph, mutual
+                         nearest pairs
+  mycorrhiza/network     cross-modal masked attention, sparse mixture-of-experts
+                         feed-forward, the encoder, the reconstruction head
+  mycorrhiza/tropism     masked reconstruction, cross-modal alignment, spatial
+                         coherence, the composite objective
+  mycorrhiza/keys        macro-F1, concordance, adjusted Rand index, normalised
+                         mutual information, response AUC, co-localisation F1,
+                         DeLong, bootstrap interval, Cohen d, Benjamini-Hochberg
+  mycorrhiza/cultivation trainer, optimiser, warmup-then-cosine schedule, atomic
+                         seeded checkpoints
+  mycorrhiza/foray       Leiden clustering, immune-exclusion score, programme
+                         extraction and jaccard merge, zero-shot transfer
+  mycorrhiza/identification   mutual-information lower bound, admissibility and
+                         within-modality equivariance checks
+  mycorrhiza/forager.py  the cultivate / key / forage / export entry points
+
+
+-- collecting kit (installation) ---------------------------------------------
+
+The bench was pinned to an older toolchain on purpose; do not float the versions.
+
+  python -m venv .venv && . .venv/bin/activate
+  pip install -r requirements.txt        # torch 1.13.1+cu117 and friends
+  pip install -e .
+
+A conda equivalent: python 3.8, torch 1.13.1 built against CUDA 11.7, then the
+remaining wheels from requirements.txt.
+
+
+-- substrate sources (data) --------------------------------------------------
+
+Every download link is collected in cultures.txt; each was resolved live before
+being recorded, and anything unreachable was left out. The dissociated corpus is
+drawn from TISCH, HLCA and Tabula Sapiens; the spatial corpus from SODB and
+STOmicsDB; the spatial-domain benchmark from spatialLIBD DLPFC; and the
+checkpoint-response cell states from GEO GSE176021. Harmonisation keeps cells and
+spots on a shared highly-variable gene set of at least five hundred genes, applies
+library-size normalisation and a log transform, and rotates a 70/10/20 split over
+five seeds.
+
+
+-- cultivation (training) ----------------------------------------------------
+
+  forager cultivate -c conf/symbiont.gin -e 100 -o runs/symbiont.pt
+
+conf/symbiont.gin carries the reported settings: embedding 256, twelve layers,
+eight heads, eight experts with top-two routing, mask fraction 0.30, objective
+weights 0.5 and 0.3, AdamW at 5e-5 with weight decay 0.01, two-thousand-step
+warmup into a cosine decay, gradient accumulation of eight, across four GPUs for an
+effective batch of two thousand and forty-eight, one hundred passes over the
+corpus. Ablation recipes for every reported variant sit next to it as
+conf/ablation_*.gin; conf/_assay.gin is a shrunken recipe used only by the test
+foray and must not be used for any reported number.
+
+
+-- keying out (evaluation) ---------------------------------------------------
+
+  forager key    -c conf/symbiont.gin     # spatial-domain ARI and NMI
+  forager forage -c conf/symbiont.gin     # exclusion zones and merged programmes
+  forager export -c conf/symbiont.gin -o runs/reconstructor.onnx
+
+Reported reference points to aim for, mean over five seeds: pan-cancer cell-type
+concordance 93.1 percent with macro-F1 0.871 and cancer AUROC 0.851; DLPFC spatial
+domains ARI 0.641 and NMI 0.718; immune-evasion response AUC 0.78 with
+co-localisation F1 0.709. The headline spatial niche couples TIGIT, CXCL13 and CCL5
+at the tumour boundary and replicates across four external platforms with
+co-localisation r between 0.82 and 0.93.
+
+
+-- bench notes (compute budget) ----------------------------------------------
+
+  parameters ....... about 120 million, 28.4 GB resident
+  pretraining ...... 48 GPU-hours on four A100 80GB cards
+  precision ........ fp32 by default; mixed precision is opt-in per recipe
+  fine-tuning ...... about 35 minutes per downstream dataset
+  inference ........ about 1,850 cells per second
+
+These are not soft targets. The low learning rate and the hundred-pass schedule
+make a full run long; the pinned CUDA 11.7 / torch 1.13.1 pairing is part of the
+record and is what the numbers above were produced against.
+
+
+-- vouchers (checkpoints) ----------------------------------------------------
+
+Checkpoints are written atomically and carry their seed, step and epoch so a run
+resumes exactly where it stopped. Trained weights are available on reasonable
+request to the working group.
+
+
+-- test foray ----------------------------------------------------------------
+
+  pytest assays -q
+
+The assays cover token shapes, within-modality equivariance, rotary relative-
+coordinate invariance, an analytic-versus-finite-difference gradient, the loss
+gates, the exclusion-score limits, the statistics against a reference, the
+mutual-information bound, a single-batch overfit, and a two-step end-to-end run on
+the assay recipe.

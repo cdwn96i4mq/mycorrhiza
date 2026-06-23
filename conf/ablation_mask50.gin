@@ -1,0 +1,2 @@
+include 'conf/symbiont.gin'
+synthetic_corpus.mask_ratio = 0.50

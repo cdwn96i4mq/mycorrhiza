@@ -1,0 +1,3 @@
+include 'conf/symbiont.gin'
+ImmunoFounder.use_cross = False
+ImmunoFounder.use_spatial = False

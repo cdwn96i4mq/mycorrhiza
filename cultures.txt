@@ -1,0 +1,22 @@
+substrate sources for the joint scRNA-seq + spatial pretraining corpus
+each line was resolved live before it was written here; unreachable sources are not listed
+
+dissociated scRNA-seq (no spatial component)
+  TISCH                 http://tisch.comp-genomics.org/home/
+  HLCA                  https://cellxgene.cziscience.com/collections/6f6d381a-7701-4781-935c-db10d30de293
+  Tabula Sapiens        https://tabula-sapiens.sf.czbiohub.org/
+
+tumour spatial transcriptomics (Visium, Slide-seqV2, MERFISH, CosMx)
+  SODB                  https://gene.ai.tencent.com/SpatialOmics/
+  STOmicsDB             https://db.cngb.org/stomics/
+
+spatial-domain benchmark (cortical layers + white matter, twelve sections)
+  spatialLIBD DLPFC     http://spatial.libd.org/spatialLIBD/
+
+immune-checkpoint cell-state phenotyping (NSCLC neoadjuvant anti-PD-1, cell-state use only)
+  GEO GSE176021         https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE176021
+
+provenance only (no standalone download portal)
+  Litchfield 2021 pan-cancer ICI meta-analysis lives in the supplementary tables of the source
+  manuscript (1,008 patients, twelve cohorts, whole-exome + transcriptome with response labels)
+  curated breast and pancreatic spatial sections are pulled through SODB and STOmicsDB above
